@@ -37,6 +37,7 @@
               :key="element.name"
             >
               {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
+			<button class="button_delete" v-on:click="arrBackLog.splice(index, 1)">-</button>
             </div>
           </draggable>
 		<b-button @click="delBackLog" variant="secondary" class="ml-3">Удалить все задачи</b-button>
@@ -57,6 +58,7 @@
               :key="element.name"
             >
               {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
+			<button class="button_delete" v-on:click="arrInProgress.splice(index, 1)">-</button>
             </div>
           </draggable>
 		<b-button @click="delProgress" variant="danger" class="ml-3">Удалить все задачи</b-button>
@@ -77,6 +79,7 @@
               :key="element.name"
             >
               {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
+			<button class="button_delete" v-on:click="arrTested.splice(index, 1)">-</button>
             </div>
           </draggable>
 		<b-button @click="delTest" variant="warning" class="ml-3">Удалить все задачи</b-button>
@@ -97,6 +100,7 @@
               :key="element.name"
             >
               {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
+			<button class="button_delete" v-on:click="arrDone.splice(index, 1)">-</button>
             </div>
           </draggable>
 		<b-button @click="delDone" variant="success" class="ml-3">Удалить все задачи</b-button>
@@ -225,4 +229,18 @@ export default {
 .kanban-column {
   min-height: 300px;
 }
+
+.button_delete {
+  background-color: #913831;
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align:center;
+  text-decoration:none;
+  display:inline-block;
+  font-size:16px;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 6px;
+} 
 </style>
