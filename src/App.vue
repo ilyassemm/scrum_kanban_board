@@ -1,22 +1,31 @@
 <template>
   <div class="container mt-5">
+	<p> <strong> Введите наименование задачи и дедлайн ее решения </strong> </p>
     <div class="row">
       <div class="col form-inline">
         <b-form-input
           id="input-2"
           v-model="newTask"
           required
-          placeholder="Enter Task"
+          placeholder="Введите задачу"
+          @keyup.enter="add"
+        ></b-form-input> 
+        <b-form-input
+          id="input-3"
+          v-model="deadline"
+			type="date"
+          required
+          placeholder="Дедлайн"
           @keyup.enter="add"
         ></b-form-input>
-        <b-button @click="add" variant="primary" class="ml-3">Add</b-button>
+        <b-button @click="add" variant="success" class="ml-3">Добавить</b-button>
       </div>
     </div>
+<!-- БЭКЛОГ --> 
     <div class="row mt-5">
       <div class="col-3">
         <div class="p-2 alert alert-secondary">
-          <h3>Back Log</h3>
-          <!-- Backlog draggable component. Pass arrBackLog to list prop -->
+          <h3>Бэклог задач</h3>
           <draggable
             class="list-group kanban-column"
             :list="arrBackLog"
@@ -27,16 +36,16 @@
               v-for="element in arrBackLog"
               :key="element.name"
             >
-              {{ element.name }}
+              {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
             </div>
           </draggable>
+		<b-button @click="delBackLog" variant="secondary" class="ml-3">Удалить все задачи</b-button>
         </div>
       </div>
-
+<!-- В РАБОТЕ --> 
       <div class="col-3">
-        <div class="p-2 alert alert-primary">
-          <h3>In Progress</h3>
-          <!-- In Progress draggable component. Pass arrInProgress to list prop -->
+        <div class="p-2 alert alert-danger">
+          <h3>В работе</h3>
           <draggable
             class="list-group kanban-column"
             :list="arrInProgress"
@@ -47,16 +56,16 @@
               v-for="element in arrInProgress"
               :key="element.name"
             >
-              {{ element.name }}
+              {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
             </div>
           </draggable>
+		<b-button @click="delProgress" variant="danger" class="ml-3">Удалить все задачи</b-button>
         </div>
       </div>
-
+<!-- ТЕСТИРУЮТСЯ--> 
       <div class="col-3">
         <div class="p-2 alert alert-warning">
-          <h3>Testing</h3>
-          <!-- Testing draggable component. Pass arrTested to list prop -->
+          <h3>Тестируются</h3>
           <draggable
             class="list-group kanban-column"
             :list="arrTested"
@@ -67,16 +76,16 @@
               v-for="element in arrTested"
               :key="element.name"
             >
-              {{ element.name }}
+              {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
             </div>
           </draggable>
+		<b-button @click="delTest" variant="warning" class="ml-3">Удалить все задачи</b-button>
         </div>
       </div>
-
+<!-- ГОТОВО--> 
       <div class="col-3">
         <div class="p-2 alert alert-success">
-          <h3>Done</h3>
-          <!-- Done draggable component. Pass arrDone to list prop -->
+          <h3>Готово</h3>
           <draggable
             class="list-group kanban-column"
             :list="arrDone"
@@ -87,9 +96,10 @@
               v-for="element in arrDone"
               :key="element.name"
             >
-              {{ element.name }}
+              {{ element.name}} до {{ element.deadline[8] }}{{ element.deadline[9] }}.{{ element.deadline[5] }}{{ element.deadline[6] }}
             </div>
           </draggable>
+		<b-button @click="delDone" variant="success" class="ml-3">Удалить все задачи</b-button>
         </div>
       </div>
     </div>
@@ -97,40 +107,116 @@
 </template>
 
 <script>
-//import draggable
 import draggable from "vuedraggable";
 
 export default {
-  name: "kanban-board",
+  name: "Планировщик",
   components: {
-    //import draggable as a component
     draggable
   },
   data() {
     return {
-      // for new tasks
       newTask: "",
-      // 4 arrays to keep track of our 4 statuses
-      arrBackLog: [
-        { name: "Code Sign Up Page" },
-        { name: "Test Dashboard" },
-        { name: "Style Registration" },
-        { name: "Help with Designs" }
-      ],
+	deadline: "",
+	arrBackLog: [],
       arrInProgress: [],
       arrTested: [],
-      arrDone: []
+      arrDone: [],
     };
   },
   methods: {
-    //add new tasks method
-    add: function() {
+    // добавить задачу
+     add: function() {
       if (this.newTask) {
-        this.arrBackLog.push({ name: this.newTask });
-        this.newTask = "";
+        this.arrBackLog.push({ name: this.newTask, deadline: this.deadline });
+		var	existing = JSON.parse(localStorage.getItem('arrBackLog')) || [];
+		existing.push({ name: this.newTask });
+		localStorage.setItem('arrBackLog', JSON.stringify(existing));
+		this.newTask = "";
       }
-    }
-  }
+    },
+	// загрузить задачи
+	load() {
+		this.arrBackLog = JSON.parse(localStorage.getItem('arrBackLog')) || [];
+		this.arrTested = JSON.parse(localStorage.getItem('arrTestedLength')) || [];
+		this.arrDone = JSON.parse(localStorage.getItem('arrDoneLength')) || [];
+		this.arrInProgress = JSON.parse(localStorage.getItem('arrInProgressLength')) || []; 
+	},
+
+	// удаление всех задач из конкретного блока
+
+	delBackLog() {
+		this.arrBackLog = []
+		localStorage.setItem('arrBackLog', [])
+	},
+
+	delProgress() {
+		this.arrTested = []
+		localStorage.setItem('arrInProgressLength', [])
+	},
+
+	delTest() {
+		this.arrDone = []
+		localStorage.setItem('arrTestedLength', [])
+	},
+
+	delDone() {
+		this.arrInProgress.length = 0
+		localStorage.setItem('arrDoneLength', [])
+	},
+
+	
+  },
+	// вспомогательные функции для вычисления длин массивов
+  computed: { 
+		arrBackLogLength() {
+      return this.arrBackLog.length
+    },
+
+		arrTestedLength() {
+      return this.arrTested.length
+    },
+		arrDoneLength() {
+      return this.arrDone.length
+    },
+		arrInProgressLength() {
+      return this.arrInProgress.length
+    },
+		
+	},
+
+  watch: {
+	// Если длина изменилась, сразу же фиксируем изменения
+
+    arrBackLogLength(val, oldVal) {
+		console.log(val, oldVal)
+		localStorage.setItem('arrBackLog', JSON.stringify(this.arrBackLog));
+    },
+
+    arrTestedLength(val, oldVal) {
+		console.log(val, oldVal)
+		localStorage.setItem('arrTestedLength', JSON.stringify(this.arrTested));
+    },
+
+    arrDoneLength(val, oldVal) {
+		console.log(val, oldVal)
+		localStorage.setItem('arrDoneLength', JSON.stringify(this.arrDone));
+    },
+
+    arrInProgressLength(val, oldVal) {
+		console.log(val, oldVal)
+		localStorage.setItem('arrInProgressLength', JSON.stringify(this.arrInProgress));
+    },
+
+  },
+
+  beforeMount() {
+	this.load();
+  },
+
+    mounted() {
+        document.title = 'Планировщик задач'
+    },
 };
 </script>
 
